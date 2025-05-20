@@ -19,7 +19,7 @@ import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "tb_postagens") // CREATE TABLE tb_postagens(); 
-public class Postagem {
+public class Tema {
 
 	@Id // Primary Key
 	@GeneratedValue(strategy = GenerationType.IDENTITY) // AUTO_INCREMENT
@@ -35,7 +35,7 @@ public class Postagem {
 	@NotBlank(message = "O atributo texto é obrigatório!")
 	@Size(min = 10, max = 1000, message = "O atributo texto deve ter no minimo 10 e no máximo 1000 caracteres.")
 	@Pattern(regexp = "^[^0-9].*", message = "O texto não pode ser apenas numérico")
-	private String texto;
+	private String descricao;
 	
 	@UpdateTimestamp
 	private LocalDateTime data;
@@ -61,11 +61,11 @@ public class Postagem {
 	}
 
 	public String getTexto() {
-		return texto;
+		return descricao;
 	}
 
-	public void setTexto(String texto) {
-		this.texto = texto;
+	public void setTexto(String descricao) {
+		this.descricao = descricao;
 	}
 
 	public LocalDateTime getData() {
