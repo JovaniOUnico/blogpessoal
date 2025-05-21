@@ -18,7 +18,7 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 @Entity
-@Table(name = "tb_postagens") // CREATE TABLE tb_postagens(); 
+@Table(name = "tb_tema") // CREATE TABLE tb_postagens(); 
 public class Tema {
 
 	@Id // Primary Key
