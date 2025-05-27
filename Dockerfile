@@ -1,26 +1,31 @@
-FROM eclipse-temurin:21-jdk AS build
+# Etapa 1: Build da aplicação
+FROM maven:3.9.0-eclipse-temurin-21 AS build
 
-WORKDIR /workspace/app
+WORKDIR /app
 
-COPY mvnw .
-COPY .mvn .mvn
+# Copiar arquivos de configuração do Maven
 COPY pom.xml .
-COPY src src
+COPY .mvn/ .mvn/
 
-RUN chmod -R 777 ./mvnw
+# Baixar dependências sem compilar o código
+RUN mvn dependency:go-offline
 
-RUN ./mvnw install -DskipTests
+# Copiar o restante do código
+COPY src/ ./src/
 
-RUN mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)
+# Compilar e empacotar a aplicação
+RUN mvn clean package -DskipTests
 
-FROM eclipse-temurin:21-jdk
+# Etapa 2: Imagem para execução
+FROM eclipse-temurin:21-jre-alpine
 
-VOLUME /tmp
+WORKDIR /app
 
-ARG DEPENDENCY=/workspace/app/target/dependency
+# Copiar o JAR gerado na etapa de build
+COPY --from=build /app/target/blogpessoal-*.jar /app/app.jar
 
-COPY --from=build ${DEPENDENCY}/BOOT-INF/lib /app/lib
-COPY --from=build ${DEPENDENCY}/META-INF /app/META-INF
-COPY --from=build ${DEPENDENCY}/BOOT-INF/classes /app
+# Expor a porta padrão do Spring Boot
+EXPOSE 8080
 
-ENTRYPOINT ["java","-cp","app:app/lib/*","com.generation.blogpessoal.BlogpessoalApplication"]
+# Comando para iniciar a aplicação
+ENTRYPOINT ["java", "-jar", "/app/app.jar"]
