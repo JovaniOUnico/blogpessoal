@@ -165,5 +165,27 @@ public class UsuarioControllerTest {
 		//Then
 		assertEquals(HttpStatus.NOT_FOUND, resposta.getStatusCode());
 	}
+	
+	@Test
+	@DisplayName("Deve logar com usuário existente")
+	public void deveLogarUsuario() {
+		
+		//Given
+		Usuario usuario = TestBuilder.criarUsuario(null, "Josias Teofilo",
+				"josias@email.com", "1234");
+		
+		usuarioService.cadastrarUsuario(usuario);
 
+		//When
+		HttpEntity<Usuario> requisicao = new HttpEntity<>(usuario);
+		ResponseEntity<Usuario> resposta = testRestTemplate
+				.withBasicAuth(USUARIO_ROOT_EMAIL, USUARIO_ROOT_SENHA)
+				.exchange(BASE_URL_USUARIOS + "/logar", HttpMethod.POST, requisicao, Usuario.class);
+
+		//Then
+		assertEquals(HttpStatus.OK, resposta.getStatusCode());
+		assertEquals("", resposta.getBody().getSenha());
+		assertEquals("josias@email.com", resposta.getBody().getUsuario());
+	}
+	
 }
